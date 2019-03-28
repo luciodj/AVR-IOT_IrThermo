@@ -26,6 +26,8 @@
 
 #include "../include/twi0.h"
 #include "i2c_simple_master.h"
+#define F_CPU 10000000
+#include "util/delay.h"
 
 /****************************************************************/
 static i2c_operations_t wr1RegCompleteHandler(void *p)
@@ -78,7 +80,7 @@ uint8_t i2c_read1ByteRegister(i2c_address_t address, uint8_t reg)
         while(I2C_BUSY == (e = I2C_0_close())); // sit here until finished.
         if(e==I2C_NOERR) break;
     }
-    
+
 
     return d2;
 }
@@ -87,6 +89,7 @@ uint8_t i2c_read1ByteRegister(i2c_address_t address, uint8_t reg)
 static i2c_operations_t rd2RegCompleteHandler(void *p)
 {
     I2C_0_set_buffer(p,2);
+    I2C_0_set_address_nack_callback(NULL, NULL); //NACK polling?
     I2C_0_set_data_complete_callback(NULL,NULL);
     return i2c_restart_read;
 }
@@ -102,7 +105,7 @@ uint16_t i2c_read2ByteRegister(i2c_address_t address, uint8_t reg)
     I2C_0_set_address_nack_callback(i2c_cb_restart_write,NULL); //NACK polling?
     I2C_0_master_write();
     while(I2C_BUSY == I2C_0_close()); // sit here until finished.
-    
+
     return (result << 8 | result >> 8);
 }
 

@@ -1,23 +1,23 @@
 /*
-    (c) 2018 Microchip Technology Inc. and its subsidiaries. 
-    
-    Subject to your compliance with these terms, you may use Microchip software and any 
-    derivatives exclusively with Microchip products. It is your responsibility to comply with third party 
-    license terms applicable to your use of third party software (including open source software) that 
+    (c) 2018 Microchip Technology Inc. and its subsidiaries.
+
+    Subject to your compliance with these terms, you may use Microchip software and any
+    derivatives exclusively with Microchip products. It is your responsibility to comply with third party
+    license terms applicable to your use of third party software (including open source software) that
     may accompany Microchip software.
-    
-    THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-    EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY 
-    IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS 
+
+    THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
+    EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY
+    IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS
     FOR A PARTICULAR PURPOSE.
-    
-    IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-    INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-    WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP 
-    HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO 
-    THE FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL 
-    CLAIMS IN ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT 
-    OF FEES, IF ANY, THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS 
+
+    IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE,
+    INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND
+    WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP
+    HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO
+    THE FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL
+    CLAIMS IN ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT
+    OF FEES, IF ANY, THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS
     SOFTWARE.
 */
 
@@ -118,13 +118,13 @@ void I2C_0_set_timeout_callback(i2c_callback cb, void *p)
 uint8_t I2C_0_init()
 {
 
-    //     TWI0.CTRLA = 0 << TWI_FMPEN_bp /* FM Plus Enable: disabled */
-    //                 | TWI_SDAHOLD_OFF_gc /* SDA Hold Time: SDA hold time off */
-    //                 | TWI_SDASETUP_4CYC_gc; /* SDA Setup Time: SDA setup time is 4 clock cycles */
+         TWI0.CTRLA = 0 << TWI_FMPEN_bp /* FM Plus Enable: disabled */
+                     | TWI_SDAHOLD_500NS_gc /* SDA Hold Time: SDA hold time off */
+                     | TWI_SDASETUP_8CYC_gc; /* SDA Setup Time: SDA setup time is 4 clock cycles */
 
     //     TWI0.DBGCTRL = 0 << TWI_DBGRUN_bp; /* Debug Run: disabled */
 
-    TWI0.MBAUD = (uint8_t)TWI0_BAUD(100000, 0); /* Master Baud Rate Control */
+    TWI0.MBAUD = (uint8_t)TWI0_BAUD(110000, 0); /* Master Baud Rate Control */
 
         TWI0.MCTRLA = 1 << TWI_ENABLE_bp /* Enable TWI Master: enabled */
                     | 0 << TWI_QCEN_bp /* Quick Command Enable: disabled */
@@ -165,7 +165,7 @@ i2c_error_t I2C_0_open(i2c_address_t address)
         I2C_0_status.state            = I2C_RESET;
         I2C_0_status.timeout_value    = 500; // MCC should determine a reasonable starting value here.
         I2C_0_status.bufferFree       = 1;
-        
+
         // set all the call backs to a default of sending stop
         I2C_0_status.callbackTable[i2c_dataComplete]     = I2C_0_return_stop;
         I2C_0_status.callbackPayload[i2c_dataComplete]   = NULL;

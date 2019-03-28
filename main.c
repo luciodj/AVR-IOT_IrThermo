@@ -34,7 +34,7 @@ SOFTWARE.
 #include "mcc_generated_files/cloud/cloud_service.h"
 #include "mcc_generated_files/debug_print.h"
 #include "mcc_generated_files/drivers/i2c_simple_master.h"
-
+#include "util/delay.h"
 // IR Thermo Click(tm) constants
 #define IR_THERMO_ADDRESS   0x5A
 #define AMB_TEMP            0x06
@@ -77,14 +77,11 @@ void sendToCloud(void)
    static char json[70];
 
    int light = SENSORS_getLightValue();
-   int temp = OBJ_TEMP;
-   //   int temp = i2c_read2ByteRegister(IR_THERMO_ADDRESS, OBJ_TEMP);
-   i2c_writeNBytes(IR_THERMO_ADDRESS, &temp, 1);
-   i2c_readNBytes(IR_THERMO_ADDRESS, &temp, 2);
-   printf("temp: %d\n", temp);
-//   temp = ((float)(temp) *  0.02) - 273.15;     // convert to deg C
+    uint16_t temp = i2c_read2ByteRegister(IR_THERMO_ADDRESS, OBJ_TEMP);
+    temp = (temp >> 8) | (temp << 8); // LSB/MSB swap
+    float ftemp = ((float)(temp) *  0.02) - 273.15;     // convert to deg C
 
-   int len = sprintf(json, "{\"Light\":%d,\"Temp\":%d}", light, temp);
+   int len = sprintf(json, "{\"Light\":%d,\"Temp\":%d.%02d}", light, (int)ftemp, (int)(ftemp*100));
 
    if (len >0) {
       CLOUD_publishData((uint8_t*)json, len);
